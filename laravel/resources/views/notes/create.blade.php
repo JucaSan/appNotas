@@ -29,11 +29,49 @@
                 <textarea id="content" name="content" rows="6">{{ old('content') }}</textarea>
             </div>
 
+            <div>
+                <label for="is_important">¿Prioridad alta?</label>
+                <input 
+                    type="checkbox" 
+                    id="is_important"
+                    name="is_important" 
+                    onchange="toggleReminder()"
+                    value="1"
+                >
+            </div>
+            
+            <div id="reminder_input">
+                <label>Fecha de recordatorio:</label><br>
+                <input 
+                    type="datetime-local" 
+                    name="reminder_date"
+                    id="reminder_date"
+                >
+            </div>
+            
+
+
             <button type="submit" class="btn-create">Crear nueva nota</button>
 
         </form>
-
     </main>
+
+    <script>
+        function toggleReminder() {
+            const isImportant = document.getElementById('is_important').checked;
+            const reminderDiv = document.getElementById('reminder_input');
+            const reminderInput = document.getElementById('reminder_date');
+
+            if (isImportant) {
+                reminderDiv.classList.add('hidden');
+                reminderInput.value = "";
+            } else {
+                reminderDiv.classList.remove('hidden');
+            }
+        }
+
+    </script>
+    
 
 </body>
 </html>

@@ -7,6 +7,7 @@
     <title>Editar nota</title>
 
     <link rel="stylesheet" href="{{ asset('css/main.css') }}">
+
 </head>
 <body>
 
@@ -20,23 +21,61 @@
                 @endforeach
             </div>
         @endif
+
         <form action="{{ route('notes.update', $note->id) }}" method="POST" class="form">
             @csrf
             @method('PUT')
 
             <div class="form-group">
-                <label for="title">Titulo de nota:</label>
-                <input type="text" id="title" name="title" value="{{ old('title', $note->title) }}"><br>
+                <label for="title">Título de nota</label>
+                <input type="text" id="title" name="title" value="{{ old('title', $note->title) }}">
             </div>
 
             <div class="form-group">
-                <label for="content">Detalles:</label>
-                <textarea id="content" cols="30" rows="10" name="content">{{old('content', $note->content)}}</textarea>
+                <label for="content">Detalles</label>
+                <textarea id="content" name="content" rows="6">{{ old('content', $note->content) }}</textarea>
             </div>
-    
-    
-            <button class="btn-create" type="submit">Editar nota</button>
+
+
+            <div>
+                <label for="is_important">¿Prioridad alta?</label>
+                <input 
+                    type="checkbox" 
+                    id="is_important"
+                    name="is_important" 
+                    onchange="toggleReminder()"
+                    value="1"
+                >
+            </div>
+            
+            <div id="reminder_input">
+                <label>Fecha de recordatorio:</label><br>
+                <input 
+                    type="datetime-local" 
+                    name="reminder_date"
+                    id="reminder_date"
+                >
+            </div>
+
+            <button class="btn-create" type="submit">Guardar cambios</button>
         </form>
     </main>
+
+    <script>
+        function toggleReminder() {
+            const isImportant = document.getElementById('is_important').checked;
+            const reminderDiv = document.getElementById('reminder_input');
+            const reminderInput = document.getElementById('reminder_date');
+
+            if (isImportant) {
+                reminderDiv.classList.add('hidden');
+                reminderInput.value = "";
+            } else {
+                reminderDiv.classList.remove('hidden');
+            }
+        }
+
+    </script>
+
 </body>
 </html>

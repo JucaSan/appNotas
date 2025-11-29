@@ -14,5 +14,15 @@ class Note extends Model
         'title',
         'content',
         'user_id',
+        'type',
+        'is_important',
+        'reminder_date',
+        'metadata',
     ];
+
+    protected $casts = [
+        'metadata' => 'array',
+        'reminder_date' => 'datetime',
+    ];
+    
 }

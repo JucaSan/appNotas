@@ -13,10 +13,13 @@
 
         <h1 class="title">Iniciar en notas</h1>
 
-        @if (session('error'))
-            <p style="color: red; font-weight: bold; margin-bottom: 15px;">
-                {{ session('error') }}
-            </p>
+        @if ($errors->any())
+            <div style="color: red; margin-bottom: 15px;">
+                <h3>Errores:</h3>
+                @foreach ($errors->all() as $error)
+                    <p>{{ $error }}</p>
+                @endforeach
+            </div>
         @endif
 
         <form action="{{ route('login.note') }}" method="POST" class="form">

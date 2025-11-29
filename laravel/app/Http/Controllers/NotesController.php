@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Factories\NoteFactory;
 use App\Http\Requests\StoreNoteRequest;
 use App\Models\Note;
 use Illuminate\Http\Request;
@@ -27,37 +28,32 @@ class NotesController extends Controller
         return view('notes.show', compact('note'));
     }
 
-    public function store(StoreNoteRequest $request){
-        $userId = Auth::id();
+    public function store(StoreNoteRequest $request)
+    {
+        $data = NoteFactory::createDataFromRequest($request, Auth::user());
 
-        DB::table('notes')->insert([
-            'title' => $request->title,
-            'content' => $request->content,
-            'user_id' => $userId,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+        DB::table('notes')->insert($data);
 
         return redirect()->route('notes.index')->with('success', 'Nota creada correctamente');
     }
+
 
     public function edit($id) {
         $note = DB::table('notes')->where('id', $id)->first();
         return view('notes.edit', compact('note'));
     }
 
-    public function update(StoreNoteRequest $request, $id) {;
-        DB::table('notes')
-        ->where('id', $id)
-        ->update([
-            'title' => $request->title,
-            'content' => $request->content,
-            'updated_at' => now(),
-        ]);
-
+    public function update(StoreNoteRequest $request, $id)
+    {
+        $data = NoteFactory::updateDataFromRequest($request);
+    
+        DB::table('notes')->where('id', $id)->update($data);
+    
         return redirect()->route('notes.show', $id)
             ->with('success', 'Nota actualizada correctamente');
     }
+
+
 
     public function destroy($id) {
         DB::table('notes')->where('id', $id)->delete();

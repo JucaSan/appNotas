@@ -20,16 +20,31 @@
             </p>
         @endif
 
-        <div class="list_element" style="padding: 20px;">
+        <div class="list_element note_show_card">
 
-            <h1 style="margin-bottom: 15px;">Título: {{ $note->title }}</h1>
-
-            <p style="font-weight: bold;">Detalles:</p>
-            <p style="white-space: pre-line;">
+            <h1 class="note_show_title">Título: {{ $note->title }}</h1>
+        
+            {{-- BADGES SPECIAL --}}
+            <div class="note_show_badges">
+                @if ($note->is_important)
+                    <span class="badge_show badge_important">Importante</span>
+                @endif
+        
+                @if ($note->reminder_date)
+                    <span class="badge_show badge_reminder">
+                        Recordatorio: {{ \Carbon\Carbon::parse($note->reminder_date)->format('d/m/Y H:i') }}
+                    </span>
+                @endif
+            </div>
+        
+            <p class="note_show_subtitle">Detalles:</p>
+        
+            <p class="note_show_content">
                 {{ $note->content }}
             </p>
-
+        
         </div>
+        
         <div style="margin-top: 20px; display: flex; gap: 10px;">
 
             <a href="{{ route('notes.edit', $note->id) }}" class="btn-create">
