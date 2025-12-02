@@ -77,6 +77,11 @@
             <a href="{{ url('/notes/' . $note->id . '/export') }}" class="btn-create">
                 Exportar JSON
             </a>
+
+            <a href="{{ route('sync', $note->id) }}" class="btn-create">
+                Sincronizar
+            </a>
+            
             
             <a href="{{ route('notes.edit', $note->id) }}" class="btn-create">
                 Editar nota

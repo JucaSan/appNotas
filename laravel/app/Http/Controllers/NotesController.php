@@ -133,4 +133,9 @@ class NotesController extends Controller
 
         return response()->json($data);
     }
+
+    public function sync($id) {
+        $note = (array) DB::table('notes')->where('id', $id)->first();
+        dd(SincronizadorNotas::enviar($note));
+    }
 }

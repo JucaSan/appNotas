@@ -233,6 +233,13 @@ a {
     color: #c62828;
 }
 
+.important-bg {
+    background-color: #fae4e4;
+}
+
+.reminder-bg {
+    background-color: #e2f0ff;
+}
 
 /* ===== Modal ===== */
 

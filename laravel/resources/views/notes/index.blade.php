@@ -27,7 +27,9 @@
         <ul class="list">
             @foreach ($notes as $note)
                 <li class="list_element">
-                    <a href="{{route('notes.show', $note->id)}}" class="list_element_link">
+                    <a href="{{route('notes.show', $note->id)}}" class="list_element_link
+                        @if($note->is_important) important-bg @endif
+                        @if($note->reminder_date) reminder-bg @endif">
                         {{ $note->title }}
                     
                         @if ($note->is_important)
@@ -47,8 +49,6 @@
                     </a>
                 </li>
             @endforeach
-
-
 
             </ul>
 
