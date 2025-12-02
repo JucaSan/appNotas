@@ -4,29 +4,23 @@ namespace App\Builders;
 
 class NoteExportDirector
 {
-    public function buildSimple(NoteExportBuilderInterface $builder, array $note)
+    public function build(string $style, array $note): array
     {
-        $builder->reset();
-        $builder->addBasicInfo($note);
-        return $builder->getResult();
-    }
+        $builder = new NoteExportBuilder();
 
-    public function buildIntermediate(NoteExportBuilderInterface $builder, array $note)
-    {
         $builder->reset();
-        $builder->addBasicInfo($note);
-        $builder->addAuthor($note);
-        $builder->addTimestamps($note);
-        return $builder->getResult();
-    }
 
-    public function buildAdvanced(NoteExportBuilderInterface $builder, array $note)
-    {
-        $builder->reset();
         $builder->addBasicInfo($note);
-        $builder->addAuthor($note);
-        $builder->addTimestamps($note);
-        $builder->addFlags($note);
+
+        if ($style !== 'simple') {
+            $builder->addAuthor($note);
+            $builder->addTimestamps($note);
+        }
+
+        if ($style === 'advanced') {
+            $builder->addFlags($note);
+        }
+
         return $builder->getResult();
     }
 }

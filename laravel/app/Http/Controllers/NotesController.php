@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Builders\AdvancedNoteBuilder;
 use App\Builders\IntermediateNoteBuilder;
+use App\Builders\NoteExportBuilder;
 use App\Builders\NoteExportDirector;
 use App\Builders\SimpleNoteBuilder;
 use App\Factories\NoteFactory;
@@ -18,7 +19,7 @@ use Illuminate\Support\Facades\DB;
 class NotesController extends Controller
 {
 
-    private function getUserNote($id)
+    private function getUserNoteOrFail($id)
     {
         $userId = Auth::id();
 
@@ -28,11 +29,13 @@ class NotesController extends Controller
             ->first();
 
         if (! $note) {
-            abort(403, 'No tienes permiso para acceder a esta nota.');
+            flash()->info('La nota a la que intentas acceder no es de tu autoría');
+            return null;
         }
 
         return $note;
     }
+
 
 
     public function index() {
@@ -48,7 +51,9 @@ class NotesController extends Controller
 
     public function show($id)
     {
-        $note = $this->getUserNote($id);
+        $note = $this->getUserNoteOrFail($id);
+        if (! $note) return redirect()->back();
+
         return view('notes.show', compact('note'));
     }
 
@@ -65,7 +70,6 @@ class NotesController extends Controller
 
         $noteId = DB::table('notes')->insertGetId($noteData);
 
-        SincronizadorNotas::enviar($noteData);
 
         return redirect()->route('notes.index')->with('success', 'Nota creada correctamente');
     }
@@ -73,13 +77,17 @@ class NotesController extends Controller
 
 
     public function edit($id) {
-        $note = $this->getUserNote($id);
+        $note = $this->getUserNoteOrFail($id);
+        if (! $note) return redirect()->back();
+
         return view('notes.edit', compact('note'));
     }
 
     public function update(StoreNoteRequest $request, $id)
     {
-        $note = $this->getUserNote($id);
+        $note = $this->getUserNoteOrFail($id);
+        if (! $note) return redirect()->back();
+
 
         $noteType = NoteFactory::make($request);
 
@@ -99,9 +107,12 @@ class NotesController extends Controller
 
 
     public function destroy($id) {
-        $note = $this->getUserNote($id);
+        $note = $this->getUserNoteOrFail($id);
+        if (! $note) return redirect()->back();
+
         DB::table('notes')->where('id', $id)->delete();
-        return redirect()->route('notes.index');
+        return redirect()->route('notes.index')
+            ->with('success', 'Nota eliminada');
     }
 
 
@@ -114,28 +125,16 @@ class NotesController extends Controller
 
         $director = new NoteExportDirector();
 
-        switch ($style) {
-            case 'simple':
-                $builder = new SimpleNoteBuilder();
-                $data = $director->buildSimple($builder, $note);
-                break;
+        $data = $director->build($style, $note);
 
-            case 'intermediate':
-                $builder = new IntermediateNoteBuilder();
-                $data = $director->buildIntermediate($builder, $note);
-                break;
-
-            case 'advanced':
-                $builder = new AdvancedNoteBuilder();
-                $data = $director->buildAdvanced($builder, $note);
-                break;
-        }
 
         return response()->json($data);
     }
 
-    public function sync($id) {
+    public function sync($id) 
+    {
         $note = (array) DB::table('notes')->where('id', $id)->first();
-        dd(SincronizadorNotas::enviar($note));
+        $sync = new SincronizadorNotas();
+        dd($sync->enviar($note));
     }
 }

@@ -4,26 +4,25 @@ namespace App\Services;
 
 use App\Adapters\EvernoteAdapter;
 use App\Adapters\GoogleKeepAdapter;
+use App\Adapters\NoteSyncAdapterInterface;
 
 class SincronizadorNotas
 {
-    public static function enviar(array $note)
+    public function enviar(array $note): array 
     {
-        $metadata = json_decode($note['metadata'], true) ?? [];
+        $adapter = $this->revolveAdapter($note);
+        return $adapter->transform($note);
+    }
+
+    private function revolveAdapter(array $note) :NoteSyncAdapterInterface
+    {
+        $metadata = json_decode($note['metadata'] ?? '{}', true);
         $service = $metadata['service'] ?? 'google';
 
-        switch ($service) {
-            case 'evernote':
-                $adapter = new EvernoteAdapter();
-                break;
-
-            case 'google':
-                $adapter = new GoogleKeepAdapter();
-                break;
-        }
-
-        $data = $adapter->transform($note);
-
-        return $data;
+        return match ($service) {
+            'evernote' => new EvernoteAdapter(),
+            'google'   => new GoogleKeepAdapter(),
+            default    => new GoogleKeepAdapter(),
+        };
     }
 }
