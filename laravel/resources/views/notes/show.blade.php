@@ -10,6 +10,24 @@
 </head>
 <body>
 
+    <div id="deleteModal" class="modal-overlay" style="display: none;">
+        <div class="modal">
+            <h2>¿Eliminar nota?</h2>
+            <p>Esta acción no se puede deshacer.</p>
+
+            <div class="modal-buttons">
+                <form id="deleteForm" action="{{ route('notes.destroy', $note->id) }}" method="POST">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="btn-delete">Sí, eliminar</button>
+                </form>
+
+                <button class="btn-cancel" onclick="closeDeleteModal()">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+
     <main class="container">
 
         <a href="{{ route('notes.index') }}">← Volver a todas las notas</a>
@@ -42,26 +60,48 @@
             <p class="note_show_content">
                 {{ $note->content }}
             </p>
+
+            @php
+                $metadata = json_decode($note->metadata, true);
+            @endphp
+                    
+            @if(isset($metadata['export_style']))
+                <p><strong>Estilo de exportación:</strong> {{ ucfirst($metadata['export_style']) }}</p>
+            @endif
+                    
         
         </div>
         
         <div style="margin-top: 20px; display: flex; gap: 10px;">
 
+            <a href="{{ url('/notes/' . $note->id . '/export') }}" class="btn-create">
+                Exportar JSON
+            </a>
+            
             <a href="{{ route('notes.edit', $note->id) }}" class="btn-create">
                 Editar nota
             </a>
 
-            <form action="{{ route('notes.destroy', $note->id) }}" method="POST" onsubmit="return confirm('¿Seguro que deseas eliminar esta nota?');">
-                @csrf
-                @method('DELETE')
-                <button type="submit" class="btn-logout" >
+
+                <button type="button" class="btn-logout" onclick="openDeleteModal()">
                     Eliminar nota
-                </button>
-            </form>
+                </button>                
+
 
         </div>
 
     </main>
+
+    <script>
+        function openDeleteModal() {
+            document.getElementById('deleteModal').style.display = 'flex';
+        }
+    
+        function closeDeleteModal() {
+            document.getElementById('deleteModal').style.display = 'none';
+        }
+    </script>
+    
 
 </body>
 </html>

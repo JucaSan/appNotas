@@ -21,6 +21,7 @@ Route::middleware(['guest.custom', 'prevent-back'])->group(function () {
 // Rutas notas
 Route::middleware(['auth', 'prevent-back'])->group(function() {
     Route::resource('notes', NotesController::class);
+    Route::get('/notes/{id}/export', [NotesController::class, 'export']);
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
     Route::post('/profile', [ProfileController::class, 'updatePassword'])->name('profile.update');
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');

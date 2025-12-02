@@ -85,10 +85,11 @@ a {
     display: inline-block;
     align-self: flex-start;
     width: auto;
+    text-transform: uppercase;
     color: white;
-    padding: 3px 8px;
+    padding: 6px 12px;
     border-radius: 6px;
-    font-size: 12px;
+    font-size: 16px;
     margin-left: 8px;
     font-weight: bold;
 }
@@ -230,5 +231,65 @@ a {
     border-radius: 6px;
     margin-bottom: 20px;
     color: #c62828;
+}
+
+
+/* ===== Modal ===== */
+
+
+/* Fondo oscuro */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+}
+
+/* Caja del modal */
+.modal {
+    background: white;
+    padding: 25px;
+    border-radius: 10px;
+    width: 350px;
+    text-align: center;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+
+/* Botones */
+.modal-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.btn-delete {
+    background-color: red;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.btn-cancel {
+    background-color: #777;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.btn-delete:hover {
+    background-color: darkred;
+}
+.btn-cancel:hover {
+    background-color: #555;
 }
 
