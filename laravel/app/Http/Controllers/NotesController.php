@@ -2,22 +2,24 @@
 
 namespace App\Http\Controllers;
 
-use App\Builders\AdvancedNoteBuilder;
-use App\Builders\IntermediateNoteBuilder;
-use App\Builders\NoteExportBuilder;
 use App\Builders\NoteExportDirector;
-use App\Builders\SimpleNoteBuilder;
 use App\Factories\NoteFactory;
 use App\Http\Requests\StoreNoteRequest;
-use App\Models\Note;
-use App\Services\NoteSyncService;
 use App\Services\SincronizadorNotas;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use App\Services\NotesService;
+
 
 class NotesController extends Controller
 {
+
+    protected $service;
+
+    public function __construct(NotesService $service)
+    {
+        $this->service = $service;
+    }
 
     private function getUserNoteOrFail($id)
     {
@@ -32,17 +34,23 @@ class NotesController extends Controller
             flash()->info('La nota a la que intentas acceder no es de tu autoría');
             return null;
         }
-
         return $note;
     }
 
-
-
     public function index() {
-        $userId = Auth::id();
+        try {
+            $filters = request()->all();
+            $filters['user_id'] = Auth::id();
 
-        $notes = DB::table('notes')->where('user_id', $userId)->get();
-        return view('notes.index', compact('notes'));
+            $notes = $this->service->listarNotas($filters);
+
+            return view('notes.index', compact('notes'));
+
+            // $notes = DB::table('notes')->where('user_id', $userId)->get();
+            // return view('notes.index', compact('notes'));
+        } catch(\Exception $e){
+            return back()->with('error', 'Error al listar notas.');
+        }
     }
 
     public function create(){
@@ -70,11 +78,8 @@ class NotesController extends Controller
 
         $noteId = DB::table('notes')->insertGetId($noteData);
 
-
         return redirect()->route('notes.index')->with('success', 'Nota creada correctamente');
     }
-
-
 
     public function edit($id) {
         $note = $this->getUserNoteOrFail($id);
@@ -103,9 +108,6 @@ class NotesController extends Controller
             ->with('success', 'Nota actualizada correctamente');
     }
 
-
-
-
     public function destroy($id) {
         $note = $this->getUserNoteOrFail($id);
         if (! $note) return redirect()->back();
@@ -114,7 +116,6 @@ class NotesController extends Controller
         return redirect()->route('notes.index')
             ->with('success', 'Nota eliminada');
     }
-
 
     public function export($id)
     {
@@ -126,7 +127,6 @@ class NotesController extends Controller
         $director = new NoteExportDirector();
 
         $data = $director->build($style, $note);
-
 
         return response()->json($data);
     }
