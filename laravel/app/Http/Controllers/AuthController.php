@@ -3,13 +3,20 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\RegisterUserRequest;
+use App\Services\AuthService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
+
 
 class AuthController extends Controller
 {
+
+    protected $service;
+
+    public function __construct(AuthService $service)
+    {
+        $this->service = $service;
+    }
 
     public function index() {
         return view('auth.login');
@@ -17,17 +24,20 @@ class AuthController extends Controller
 
 
     public function login(Request $request) {
-        $credentials = $request->validate([
-            'email' => 'required',
-            'password' => 'required',
-        ]);
 
-        if(Auth::attempt($credentials)) {
+        try {
+            $credentials = $request->validate([
+                'email'    => 'required',
+                'password' => 'required',
+            ]);
+    
+            Auth::attempt($credentials);
             $request->session()->regenerate();
             return redirect()->route('notes.index');
+        } catch(\Exception $e) {
+            return back()->with('error', 'Credenciales incorrectas');
         }
 
-        return back()->with('error', 'Credenciales incorrectas');
     }
 
 
@@ -42,17 +52,16 @@ class AuthController extends Controller
     }
 
     public function register(RegisterUserRequest $request) {
-        $userId = DB::table('users')->insertGetId([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-
-
-        Auth::loginUsingId($userId);
-
-        return redirect()->route('notes.index')->with('success', 'Registrado e iniciado sesión correctamente');
+        try {
+            $data = $request->validated();
+    
+            $userId = $this->service->registrarUsuario($data);
+            Auth::loginUsingId($userId);
+    
+            return redirect()->route('notes.index')
+                ->with('success', 'Registrado e iniciado sesión correctamente');
+        } catch(\Exception $e) {
+            return back()->with('Error', 'El usuario no se ha podido crear correctamente');
+        }
     }
 }

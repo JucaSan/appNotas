@@ -2,37 +2,57 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\AuthService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
 class ProfileController extends Controller
 {
+    protected $service;
+
+    public function __construct(AuthService $service)
+    {
+        $this->service = $service;
+    }
+
     public function index() {
-        $user = DB::table('users')->where('id', Auth::id())->first();
+        try {
+            $userId = Auth::id();
+            $user = $this->service->obtenerUsuario($userId);
 
-        return view('auth.profile', compact('user'));
-    }
-
-    public function updatePassword(Request $request){
-        $request->validate([
-            'current_password' => 'required',
-            'password' => 'required|min:6|confirmed',
-        ]);
-
-        $user = DB::table('users')->where('id', Auth::id())->first();
-
-        if (!Hash::check($request->current_password, $user->password)) {
-            return back()->withErrors(['current_password' => 'La contraseña actual no es correcta']);
+            return view('auth.profile', compact('user'));
+        } catch(\Exception $e){
+            return back()->with('error', "Algo ha salido mal al acceder a tu perfil");
         }
-
-        DB::table('users')->where('id', $user->id)->update([
-            'password' => Hash::make($request->password),
-            'updated_at' => now(),
-        ]);
-
-        return back()->with('success', 'Contraseña actualizada correctamente');
-
     }
+
+    public function updatePassword(Request $request)
+    {
+        try {
+            $request->validate([
+                'current_password' => 'required',
+                'password' => 'required|min:6|confirmed',
+            ]);
+
+            $userId = Auth::id();
+            $user = $this->service->obtenerUsuario($userId);
+
+            if (!Hash::check($request->current_password, $user->password)) {
+                return back()->withErrors([
+                    'current_password' => 'La contraseña actual no es correcta'
+                ]);
+            }
+
+            $this->service->actualizarUsuario($userId, [
+                'password' => $request->password,
+            ]);
+
+            return back()->with('success', 'Contraseña actualizada correctamente');
+
+        } catch(\Exception $e) {
+            return back()->with('error', 'Hubo un error al cambiar la contraseña');
+        }
+    }
+
 }
