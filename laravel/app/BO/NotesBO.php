@@ -1,33 +1,37 @@
 <?php
+
 namespace App\BO;
+
+use App\Factories\NoteFactory;
+use Illuminate\Http\Request;
+
 
 class NotesBO
 {
-    public function buildForCreate($request) 
+    public function prepararParaCrear(array $data): array
     {
-        return [
-            'title' => $request->title,
-            'content' => $request->content,
-            'user_id' => $request->user_id,
-            'reminder_date' => $request->reminder_date,
-            'metadata' => json_encode([
-                'export_style' => $request->export_style ?? 'simple'
-            ]),
-            'created_at' => now(),
-            'updated_at' => now(),
-        ];
+        $fakeRequest = new Request($data);
+
+        $noteType = NoteFactory::make( $fakeRequest );
+
+        return $noteType->build([
+            'title'         => $data['title'],
+            'content'       => $data['content'],
+            'user_id'       => $data['user_id'],
+            'reminder_date' => $data['reminder_date'] ?? null,
+        ]);
     }
 
-    public function buildForUpdate($request)
+    public function prepararParaActualizar(array $data): array
     {
-        return [
-            'title' => $request->title,
-            'content' => $request->content,
-            'reminder_date' => $request->reminder_date,
-            'metadata' => json_encode([
-                'export_style' => $request->export_style ?? 'simple'
-            ]),
-            'updated_at' => now(),
-        ];
+        $fakeRequest = new Request($data);
+
+        $noteType = NoteFactory::make( $fakeRequest );
+
+        return $noteType->buildForUpdate([
+            'title'         => $data['title'],
+            'content'       => $data['content'],
+            'reminder_date' => $data['reminder_date'] ?? null,
+        ]);
     }
 }

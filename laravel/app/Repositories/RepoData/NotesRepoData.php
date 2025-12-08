@@ -16,28 +16,24 @@ class NotesRepoData
 
     public function listar($filters)
     {
-        $columnas = $this->rh->obtenerColumnas();
-        $query = DB::table('notes')->select($columnas);
+        $query = DB::table('notes');
 
-        $filtros = $this->rh->obtenerFiltros($filters);
-        foreach($filtros as $f) {
-            $query->where($f[0], $f[1], $f[2]);
-        }
+        $this->rh->obtenerColumnas($query, $filters['columnas']);
+        $this->rh->obtenerFiltros($query, $filters);
+        $this->rh->obtenerOrden($query, $filters);
 
         $query->where('user_id', $filters['user_id']);
-
-        [$columna, $direccion] = $this->rh->obtenerOrden($filters);
-        $query->orderBy($columna, $direccion);
 
         return $query->get();
     }
 
-    public function obtener($id, $user_id) {
-        
-        $columnas = $this->rh->obtenerColumnas();
+    public function obtener($id, $user_id, $filters)
+    {
+        $query = DB::table('notes');
 
-        return DB::table('notes')
-            ->select($columnas)
+        $this->rh->obtenerColumnas($query, $filters['columnas']);
+
+        return $query
             ->where('id', $id)
             ->where('user_id', $user_id)
             ->first();

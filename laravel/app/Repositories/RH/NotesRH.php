@@ -4,43 +4,34 @@ namespace App\Repositories\RH;
 
 class notesRH 
 {
-    public function obtenerColumnas() {
-        return [
-            'id',
-            'title',
-            'content',
-            'user_id',
-            'is_important',
-            'reminder_date',
-            'metadata',
-            'created_at',
-            'updated_at'
-        ];
+    public function obtenerColumnas(&$query, string $columnasString)
+    {
+        $columnas = array_map('trim', explode(',', $columnasString));
+        $query->select($columnas);
     }
 
-    public function obtenerFiltros($filters) {
-        $where = [];
-
-        if(!empty($filters['search'])) {
-            $where[] = ['title', 'LIKE', "%{$filters['search']}%"];
+    public function obtenerFiltros(&$query, $filters)
+    {
+        if (!empty($filters['search'])) {
+            $query->where('title', 'LIKE', '%'.$filters['search'].'%');
         }
 
-        if(!empty($filters['date_from'])) {
-            $where[] = ['created_at', '>=', $filters['date_from']];
+        if (!empty($filters['date_from'])) {
+            $query->where('created_at', '>=', $filters['date_from']);
         }
 
-        if(!empty($filters['date_to'])) {
-            $where[] = ['created_at', '<=', $filters['date_to']];
+        if (!empty($filters['date_to'])) {
+            $query->where('created_at', '<=', $filters['date_to']);
         }
-
-        return $where;
     }
 
-    public function obtenerOrden($filters) {
+
+    public function obtenerOrden(&$query, $filters)
+    {
         $columna = $filters['orden_columna'] ?? 'created_at';
         $direccion = $filters['orden_direccion'] ?? 'desc';
 
-        return [$columna, $direccion];
+        $query->orderBy($columna, $direccion);
     }
 
 

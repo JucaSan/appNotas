@@ -34,7 +34,7 @@
                name="search"
                placeholder="Buscar por título"
                value="{{ request('search') }}">
-
+               
         <input type="date"
                name="date_from"
                value="{{ request('date_from') }}">
