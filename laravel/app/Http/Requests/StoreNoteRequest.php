@@ -24,6 +24,8 @@ class StoreNoteRequest extends FormRequest
         return [
             'title' => 'required|min:5|max:255',
             'content' => 'required',
+            'is_important'   => 'nullable|boolean',
+            'reminder_date'  => 'nullable|date',
         ];
     }
 }

@@ -2,11 +2,11 @@
 
 namespace App\Builders;
 
-class NoteExportDirector
+class NotaExportDirector
 {
     public function build(string $style, array $note): array
     {
-        $builder = new NoteExportBuilder();
+        $builder = new NotaExportBuilder();
 
         $builder->reset();
 

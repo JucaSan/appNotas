@@ -6,7 +6,7 @@ use App\Factories\NoteFactory;
 use Illuminate\Http\Request;
 
 
-class NotesBO
+class NotasBO
 {
     public function prepararParaCrear(array $data): array
     {

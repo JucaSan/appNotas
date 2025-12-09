@@ -4,7 +4,7 @@ namespace App\Builders;
 
 use Illuminate\Support\Facades\DB;
 
-class AdvancedNoteBuilder implements NoteExportBuilderInterface
+class NotaExportBuilder implements NotaExportBuilderInterface
 {
     private array $data = [];
 
@@ -16,19 +16,21 @@ class AdvancedNoteBuilder implements NoteExportBuilderInterface
     public function addBasicInfo(array $note): void
     {
         $this->data['title'] = $note['title'];
+        $this->data['description'] = $note['content'];
     }
 
     public function addAuthor(array $note): void
     {
-        $author = DB::table('users')->where('id', $note['user_id'])->value('name');
-        $this->data['author'] = $author;
+        $this->data['author'] = DB::table('users')
+        ->where('id', $note['user_id'])
+        ->value('name');
     }
 
     public function addTimestamps(array $note): void
     {
         $this->data['created_at'] = $note['created_at'];
         $this->data['updated_at'] = $note['updated_at'];
-        $this->data['was_edited'] = $note['created_at'] != $note['updated_at'];
+        $this->data['was_edited'] = $note['created_at'] !== $note['updated_at'];
     }
 
     public function addFlags(array $note): void

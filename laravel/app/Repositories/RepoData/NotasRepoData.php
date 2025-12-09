@@ -2,14 +2,14 @@
 
 namespace App\Repositories\RepoData;
 
-use App\Repositories\RH\NotesRH;
+use App\Repositories\RH\NotasRH;
 use Illuminate\Support\Facades\DB;
 
-class NotesRepoData 
+class NotasRepoData 
 {
     protected $rh;
 
-    public function __construct(NotesRH $rh)
+    public function __construct(NotasRH $rh)
     {
         $this->rh = $rh;
     }
@@ -23,8 +23,9 @@ class NotesRepoData
         $this->rh->obtenerOrden($query, $filters);
 
         $query->where('user_id', $filters['user_id']);
-
+        $query->where('is_active', true);
         return $query->get();
+
     }
 
     public function obtener($id, $user_id, $filters)
@@ -34,8 +35,9 @@ class NotesRepoData
         $this->rh->obtenerColumnas($query, $filters['columnas']);
 
         return $query
-            ->where('id', $id)
-            ->where('user_id', $user_id)
-            ->first();
+        ->where('id', $id)
+        ->where('user_id', $user_id)
+        ->where('is_active', true)
+        ->first();
     }
 }

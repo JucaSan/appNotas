@@ -2,7 +2,7 @@
 
 namespace App\Builders;
 
-interface NoteExportBuilderInterface
+interface NotaExportBuilderInterface
 {
     public function reset(): void;
     public function addBasicInfo(array $note): void;

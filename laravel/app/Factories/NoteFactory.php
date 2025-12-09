@@ -3,7 +3,6 @@
 namespace App\Factories;
 
 use Illuminate\Http\Request;
-use App\Models\User;
 
 class NoteFactory
 {

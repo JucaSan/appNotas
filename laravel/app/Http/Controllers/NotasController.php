@@ -2,19 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use App\Builders\NoteExportDirector;
+use App\Builders\NotaExportDirector;
 use App\Http\Requests\StoreNoteRequest;
 use App\Services\SincronizadorNotas;
 use Illuminate\Support\Facades\Auth;
-use App\Services\NotesService;
+use App\Services\NotasService;
 use Illuminate\Http\Request;
 
 
-class NotesController extends Controller
+class NotasController extends Controller
 {
     protected $service;
 
-    public function __construct(NotesService $service)
+    public function __construct(NotasService $service)
     {
         $this->service = $service;
     }
@@ -92,6 +92,7 @@ class NotesController extends Controller
     public function update(StoreNoteRequest $request, $id)
     {
        try {
+            $data['updated_by'] = Auth::id();
             $data = $request->validated();
             $this->service->actualizarNota($id, $data);
 
@@ -105,7 +106,7 @@ class NotesController extends Controller
 
     public function destroy($id) {
         try {
-            $this->service->eliminarNota($id);
+            $this->service->eliminarNota($id, Auth::id());
     
             return redirect()->route('notes.index')
                 ->with('success', 'Nota eliminada');
@@ -130,7 +131,7 @@ class NotesController extends Controller
             $metadata = json_decode($noteArray['metadata'], true);
             $style = $metadata['export_style'] ?? 'simple';
 
-            $director = new NoteExportDirector();
+            $director = new NotaExportDirector();
             $data = $director->build($style, $noteArray);
 
             return response()->json($data);

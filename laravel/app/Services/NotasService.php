@@ -2,20 +2,20 @@
 
 namespace App\Services;
 
-use App\BO\NotesBO;
-use App\Repositories\RepoData\NotesRepoData;
-use App\Repositories\RepoAction\NotesRepoAction;
+use App\BO\NotasBO;
+use App\Repositories\RepoData\NotasRepoData;
+use App\Repositories\RepoAction\NotasRepoAction;
 
-class NotesService {
+class NotasService {
 
     protected $noteRD;
     protected $noteRA;
     protected $noteBO;
 
     public function __construct(
-        NotesRepoData $noteRD,
-        NotesRepoAction $noteRA,
-        NotesBO $noteBO
+        NotasRepoData $noteRD,
+        NotasRepoAction $noteRA,
+        NotasBO $noteBO
         )
     {
         $this->noteRD = $noteRD;
@@ -25,13 +25,12 @@ class NotesService {
 
     public function listarNotas($filters)
     {
-        $filters['columnas'] = "id,title,content,user_id,is_important,reminder_date,metadata,created_at,updated_at";
         return $this->noteRD->listar($filters);
     }
 
     public function obtenerNota($id, $user_id)
     {
-        $filters['columnas'] = "id,title,content,user_id,is_important,reminder_date,metadata,created_at,updated_at";
+        $filters['columnas'] = 'id,title,content,user_id,is_important,reminder_date,metadata,created_at,updated_at';
         return $this->noteRD->obtener($id, $user_id, $filters);
     }
 
@@ -45,10 +44,11 @@ class NotesService {
     {
         $preparado = $this->noteBO->prepararParaActualizar($data);
         return $this->noteRA->actualizar($id, $preparado);
+
     }
 
-    public function eliminarNota(int $id)
+    public function eliminarNota(int $id, int $userId)
     {
-        return $this->noteRA->eliminar($id);
+        return $this->noteRA->eliminar($id, $userId);
     }
 }

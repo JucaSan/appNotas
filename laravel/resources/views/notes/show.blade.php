@@ -78,7 +78,7 @@
                 Exportar JSON
             </a>
 
-            <a href="{{ route('sync', $note->id) }}" class="btn-create">
+            <a href="{{ route('notes.sync', $note->id) }}" class="btn-create">
                 Sincronizar
             </a>
             

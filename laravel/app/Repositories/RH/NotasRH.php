@@ -2,10 +2,13 @@
 
 namespace App\Repositories\RH;
 
-class notesRH 
+class NotasRH 
 {
     public function obtenerColumnas(&$query, string $columnasString)
     {
+        // $columnasvalor = [
+        //     'es_activo' => 'n.is_active'
+        // ]
         $columnas = array_map('trim', explode(',', $columnasString));
         $query->select($columnas);
     }
